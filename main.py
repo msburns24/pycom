@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Optional
-from rich import print
+from rich import print, inspect
 from win32com import client
 from win32com.client import Dispatch, CDispatch
 
@@ -10,9 +10,42 @@ INBOX_FOLDER_NUMBER = 6
 
 
 def main() -> int:
-    # app = Application()
-    inbox = Inbox()
+    app = Application()
+    namespace = app.get_namespace('MAPI')
+    inbox = namespace.get_default_folder(INBOX_FOLDER_NUMBER)
+    inspect(inbox)
     return 0
+
+
+def extract_attributes(
+        to_object: object,
+        from_object: object,
+        attrs_map: dict[str, str],
+) -> None:
+    '''
+    Extracts attributes specified in `attrs_map` and adds them to the provided
+    object. When an exception is raised, stores `None`.
+
+    Parameters
+    ----------
+    to_object : object
+        The object in which to store the extracted attributes.
+    from_object : object
+        The object from which to extract the attributes
+    attrs_map : dict[str, str]
+        A map of `from_attr_name` to `to_attr_name`
+    
+    Returns
+    -------
+    None
+    '''
+    for from_attr_name, to_attr_name in attrs_map.items():
+        try:
+            value = getattr(from_object, from_attr_name)
+        except:
+            value = None
+        setattr(to_object, to_attr_name, value)
+    return
 
 
 class Application:
@@ -70,28 +103,28 @@ class Application:
     
     Methods
     -------
-    advanced_search(scope, filter, search_sub_folders, tag) -> CDispatch
+    advanced_search(scope, filter, search_sub_folders, tag)
         Performs a search based on a specified DAV Searching and Locating
         (DASL) search string.
-    copy_file(file_path, dest_folder_path) -> CDispatch
+    copy_file(file_path, dest_folder_path)
         Copies a file from a specified location into a Micro1soft Outlook
         store.
-    create_item(item_type) -> CDispatch
+    create_item(item_type)
         Creates and returns a new Microsoft Outlook item.
-    create_item_from_template(template_path, in_folder=None) -> CDispatch
+    create_item_from_template(template_path, in_folder=None)
         Creates a new Microsoft Outlook item from an Outlook template (`.oft`)
         and returns the new item.
-    create_object(object_name) -> CDispatch
+    create_object(object_name)
         Creates an Automation object of the specified class.
-    get_namespace(type_='MAPI') -> CDispatch
+    get_namespace(type_='MAPI')
         Returns a NameSpace object of the specified type.
-    get_object_reference(item, reference_type) -> CDispatch
+    get_object_reference(item, reference_type)
         Creates a strong or weak object reference for a specified `Outlook`
         object.
-    is_search_synchronous(look_in_folders) -> bool
+    is_search_synchronous(look_in_folders)
         Returns a boolean indicating if a search will be synchronous or
         asynchronous.
-    refresh_form_region_definition(region_name='') -> None
+    refresh_form_region_definition(region_name='')
         Refreshes the cache by obtaining the current definition from the
         Windows registry for one or all of the form regions that are defined
         for the local machine and the current user.
@@ -100,23 +133,24 @@ class Application:
     def __init__(self) -> None:
         self._application = Dispatch('Outlook.Application')
 
-        self.assistance: CDispatch|None = None
-        self.com_add_ins: CDispatch|None = None
-        self.data_privacy_options: CDispatch|None = None
-        self.default_profile_name: str|None = None
-        self.explorers: CDispatch|None = None
-        self.inspectors: CDispatch|None = None
-        self.is_trusted: bool|None = None
-        self.language_settings: CDispatch|None = None
-        self.name: str|None = None
-        self.picker_dialog: CDispatch|None = None
-        self.product_code: str|None = None
-        self.reminders: CDispatch|None = None
-        self.session: CDispatch|None = None
-        self.time_zones: CDispatch|None = None
-        self.version: str|None = None
+        # Type hints
+        self.assistance:            CDispatch|None  = None
+        self.com_add_ins:           CDispatch|None  = None
+        self.data_privacy_options:  CDispatch|None  = None
+        self.default_profile_name:  str|None        = None
+        self.explorers:             CDispatch|None  = None
+        self.inspectors:            CDispatch|None  = None
+        self.is_trusted:            bool|None       = None
+        self.language_settings:     CDispatch|None  = None
+        self.name:                  str|None        = None
+        self.picker_dialog:         CDispatch|None  = None
+        self.product_code:          str|None        = None
+        self.reminders:             CDispatch|None  = None
+        self.session:               CDispatch|None  = None
+        self.time_zones:            CDispatch|None  = None
+        self.version:               str|None        = None
 
-        all_attrs = {
+        attrs_map = {
             'Assistance':          'assistance',
             'COMAddIns':           'com_add_ins',
             'DataPrivacyOptions':  'data_privacy_options',
@@ -133,12 +167,13 @@ class Application:
             'TimeZones':           'time_zones',
             'Version':             'version',
         }
-        for com_name, new_name in all_attrs.items():
-            try:
-                value = getattr(self._application, com_name)
-                setattr(self, new_name, value)
-            except:
-                pass
+        # for com_name, new_name in attrs_map.items():
+        #     try:
+        #         value = getattr(self._application, com_name)
+        #         setattr(self, new_name, value)
+        #     except:
+        #         pass
+        extract_attributes(self, self._application, attrs_map)
         return
     
     @property
@@ -224,7 +259,7 @@ class Application:
         Returns
         -------
         obj : CDispatch
-            An Object value that represents the copied file.
+            An `Object` value that represents the copied file.
         '''
         return self._application.CopyFile(file_path, dest_folder_path)
     
@@ -308,7 +343,7 @@ class Application:
         '''
         return self._application.CreateObject(object_name)
     
-    def get_namespace(self, type_: str='MAPI') -> CDispatch:
+    def get_namespace(self, type_: str='MAPI') -> NameSpace:
         '''
         Returns a NameSpace object of the specified type.
 
@@ -327,6 +362,12 @@ class Application:
         The only supported name space type is "MAPI". The GetNameSpace method
         is functionally equivalent to the Session property, which was
         introduced in Microsoft Outlook 98.
+        '''
+        return NameSpace(self, type_)
+    
+    def _get_namespace(self, type_: str='MAPI') -> CDispatch:
+        '''
+        Private method to access `pywin32` method.
         '''
         return self._application.GetNamespace(type_)
     
@@ -411,9 +452,9 @@ class Application:
         When Microsoft Outlook starts, it reads the Windows registry to obtain
         a list of form regions and their definitions, and then caches the data.
         The definitions are stored in the registry under the local machine key
-        (as `HKEY_LOCAL_MACHINE\Software\Microsoft\Office\Outlook\FormRegions`)
+        (as `HKEY_LOCAL_MACHINE/Software/Microsoft/Office/Outlook/FormRegions`)
         and under the current user key (as
-        `HKEY_CURRENT_USER\Software\Microsoft\Office\Outlook\FormRegions`). The
+        `HKEY_CURRENT_USER/Software/Microsoft/Office/Outlook/FormRegions`). The
         definitions describe the layout, behavior, and other characteristics of
         each form region. If you register a form region or modify the
         definition of a form region after Outlook starts, you can use the
@@ -430,13 +471,467 @@ class Application:
         return self._application.RefreshFormRegionDefinition(region_name)
     
 
+class NameSpace:
+    '''
+    Represents an abstract root object for any data source.
+
+    Properties
+    ----------
+    accounts : CDispatch | None
+        An `Accounts` collection object that represents all the `Account`
+        objects in the current profile. Read-only.
+    address_lists : CDispatch | None
+        An `AddressLists` collection representing a collection of the address
+        lists available for this session. Read-only.
+    application : Application
+        The parent Outlook application for the object.
+    auto_discover_connection_mode : int | None
+        A constant that specifies the type of connection to the Exchange
+        server for auto-discovery service. Read-only.
+    auto_discover_xml : str | None
+        Information in XML retrieved from the auto-discovery service of an
+        Exchange server. Read-only.
+    categories : CDispatch | None
+        The set of `Category` objects available to the namespace. Read/write.
+    current_profile_name : str | None
+        The name of the current profile. Read-only.
+    current_user : CDispatch | None
+        The display name of the currently logged-on user as a `Recipient`
+        object. Read-only.
+    default_store : CDispatch | None
+        The default `Store` for the profile. Read-only.
+    exchange_connection_mode : int | None
+        A constant that indicates the current connection mode the user is
+        using. Read-only.
+    exchange_mailbox_server_name : str | None
+        The name of the Exchange server on which the active mailbox is hosted.
+        Read-only.
+    exchange_mailbox_server_version : str | None
+        The full version of the Exchange server on which the active mailbox is
+        hosted. Read-only.
+    folders : CDispatch | None
+        All the folders contained in the specified NameSpace. Read-only.
+    offline : bool | None
+        Indicates `True` if Outlook is offline (not connected to an Exchange
+        server), and `False` if online (connected to an Exchange server).
+        Read-only.
+    session : CDispatch | None
+        The `NameSpace` object for the current session. Read-only.
+    stores : CDispatch | None
+        All the `Store` objects in the current profile. Read-only.
+    sync_objects : CDispatch | None
+        Contains all Send/Receive groups. Read-only.
+
+    Methods
+    -------
+    add_store(store)
+        Adds a Personal Folders (`.pst`) file to the current profile.
+    add_store_ex(store, type_)
+        Adds a Personal Folders file (`.pst`) in the specified format to the
+        current profile.
+    compare_entry_ids(first_entry_id, second_entry_id)
+        Returns a boolean that indicates if two entry ID values refer to the
+        same Outlook item.
+    create_contact_card(address_entry)
+        Creates an instance of a `ContactCard` object for the contact that is
+        specified by the `address_entry` parameter.
+    create_recipient(recipient_name)
+        Creates a `Recipient` object.
+    create_sharing_item(context, provider=None)
+        Creates a new `SharingItem` object.
+    dial(contact_item)
+        Displays the New Call dialog box that allows users to dial the primary
+        phone number of a specified contact.
+    get_address_entry_from_id(id_)
+        Returns an `AddressEntry` object that represents the address entry
+        specified by ID.
+    get_default_folder(folder_type)
+        Returns a `Folder` object that represents the default folder of the
+        requested type for the current profile; for example, obtains the
+        default `Calendar` folder for the user who is currently logged on.
+    GetFolderFromID
+    GetGlobalAddressList
+    GetIDsOfNames
+    GetItemFromID
+    GetRecipientFromID
+    GetSelectNamesDialog
+    GetSharedDefaultFolder
+    GetStoreFromID
+    GetTypeInfo
+    GetTypeInfoCount
+    Invoke
+    Logoff
+    Logon
+    OpenSharedFolder
+    OpenSharedItem
+    PickFolder
+    QueryInterface
+    RefreshRemoteHeaders
+    Release
+    RemoveStore
+    SendAndReceive
+    '''
+
+    def __init__(self, application: Application, type_: str='MAPI') -> None:
+        self.application = application
+        self._namespace = self.application._get_namespace(type_)
+
+        # Type hints
+        self.accounts:                         CDispatch|None  = None
+        self.address_lists:                    CDispatch|None  = None
+        self.auto_discover_connection_mode:    int|None        = None
+        self.auto_discover_xml:                str|None        = None
+        self.categories:                       CDispatch|None  = None
+        self.current_profile_name:             str|None        = None
+        self.current_user:                     CDispatch|None  = None
+        self.default_store:                    CDispatch|None  = None
+        self.exchange_connection_mode:         int|None        = None
+        self.exchange_mailbox_server_name:     str|None        = None
+        self.exchange_mailbox_server_version:  str|None        = None
+        self.folders:                          CDispatch|None  = None
+        self.offline:                          bool|None       = None
+        self.session:                          CDispatch|None  = None
+        self.stores:                           CDispatch|None  = None
+        self.sync_objects:                     CDispatch|None  = None
+
+        # Extract attributes
+        attrs_map = {
+            'Accounts':                      'accounts',
+            'AddressLists':                  'address_lists',
+            'AutoDiscoverConnectionMode':    'auto_discover_connection_mode',
+            'AutoDiscoverXml':               'auto_discover_xml',
+            'Categories':                    'categories',
+            'CurrentProfileName':            'current_profile_name',
+            'CurrentUser':                   'current_user',
+            'DefaultStore':                  'default_store',
+            'ExchangeConnectionMode':        'exchange_connection_mode',
+            'ExchangeMailboxServerName':     'exchange_mailbox_server_name',
+            'ExchangeMailboxServerVersion':  'exchange_mailbox_server_version',
+            'Folders':                       'folders',
+            'Offline':                       'offline',
+            'Session':                       'session',
+            'Stores':                        'stores',
+            'SyncObjects':                   'sync_objects',
+        }
+        extract_attributes(self, self._namespace, attrs_map)
+        return
+
+    def add_store(self, store: CDispatch) -> None:
+        '''
+        Adds a Personal Folders (`.pst`) file to the current profile.
+
+        Parameters
+        ----------
+        store : CDispatch
+            The path of the `.pst` file to be added to the profile. If the
+            `.pst` file does not exist, Microsoft Outlook creates it.
+        
+        Remarks
+        -------
+        Use the `remove_store` method to remove a `.pst` that is already added
+        to a profile.
+        '''
+        return self._namespace.AddStore(store)
+    
+    def add_store_ex(self, store: CDispatch, type_: CDispatch) -> None:
+        '''
+        Adds a Personal Folders file (`.pst`) in the specified format to the
+        current profile.
+
+        Parameters
+        ----------
+        store : CDispatch
+            The path of the `.pst` file to be added to the profile. If the
+            `.pst` file does not exist, Microsoft Outlook creates it.
+        type_: CDispatch
+            The format in which the data file should be created.
+
+        Returns
+        -------
+        None
+
+        Remarks
+        -------
+        Use the `type_` constant to add a new `.pst` file that has greater
+        storage capacity for items and folders and supports multilingual
+        Unicode data, to the user's profile. The `olStoreANSI` constant allows
+        you to create `.pst` files that do not provide full support for
+        multilingual Unicode data, but are compatible with earlier versions of
+        Outlook. The `type_` constant helps you create a `.pst` file in the
+        default format that is compatible with the mailbox mode in which
+        Outlook runs on the Microsoft Exchange Server.
+        '''
+        return self._namespace.AddStoreEx(store, type_)
+    
+    def compare_entry_ids(
+            self,
+            first_entry_id: str,
+            second_entry_id: str,
+    ) -> bool:
+        '''
+        Returns a boolean that indicates if two entry ID values refer to the
+        same Outlook item.
+
+        Parameters
+        ----------
+        first_entry_id : str
+            The first entry ID to be compared.
+        second_entry_id : str
+        The second entry ID to be compared.
+
+        Returns
+        -------
+        result : bool
+            `True` if the entry ID values refer to the same Outlook item;
+            otherwise, `False`.
+
+        Remarks
+        -------
+        Entry identifiers cannot be compared directly because one object can be
+        represented by two different binary values. Use this method to
+        determine whether two entry identifiers represent the same object.
+        '''
+        return self._namespace.CompareEntryIDs(first_entry_id, second_entry_id)
+    
+    def create_contact_card(self, address_entry: CDispatch) -> CDispatch:
+        '''
+        Creates an instance of a `ContactCard` object for the contact that is
+        specified by the `address_entry` parameter.
+
+        Parameters
+        ----------
+        address_entry : CDispatch
+            The `AddressEntry` object that represents the user for whom the
+            contact card is to be created.
+
+        Returns
+        -------
+        contact_card : CDispatch
+            Returns a `ContactCard` object that is created for the specified
+            user.
+
+        Remarks
+        -------
+        The `ContactCard` object is available in the type library of Microsoft
+        Office. Before calling `create_contact_card` to create a contact card
+        in Microsoft Outlook, Outlook must be logged into an Outlook session.
+
+        The `address_entry` parameter is an `AddressEntry` object that
+        represents one of the following `AddressEntry` types defined in the
+        `OlAddressEntryUserType` enumeration:
+
+        - `olExchangeUserAddressEntry`
+            - **Value:** 0
+            - **Description:** An Exchange user that belongs to the same
+              Exchange forest.
+        - `olExchangeDistributionListAddressEntry`
+            - **Value:** 1
+            - **Description:** An address entry that is an Exchange
+              distribution list.
+        - `olExchangePublicFolderAddressEntry`
+            - **Value:** 2
+            - **Description:** An address entry that is an Exchange public
+              folder.
+        - `olExchangeAgentAddressEntry`
+            - **Value:** 3
+            - **Description:** An address entry that is an Exchange agent.
+        - `olExchangeOrganizationAddressEntry`
+            - **Value:** 4
+            - **Description:** An address entry that is an Exchange
+              organization.
+        - `olExchangeRemoteUserAddressEntry`
+            - **Value:** 5
+            - **Description:** An Exchange user that belongs to a different
+              Exchange forest.
+        - `olOutlookContactAddressEntry`
+            - **Value:** 10
+            - **Description:** An address entry in an Outlook Contacts folder.
+        - `olOutlookDistributionListAddressEntry`
+            - **Value:** 11
+            - **Description:** An address entry that is an Outlook distribution
+              list.
+        - `olLdapAddressEntry`
+            - **Value:** 20
+            - **Description:** An address entry that uses the Lightweight
+              Directory Access Protocol (LDAP).
+        - `olSmtpAddressEntry`
+            - **Value:** 30
+            - **Description:** An address entry that uses the Simple Mail
+              Transfer Protocol (SMTP).
+        - `olOtherAddressEntry`
+            - **Value:** 40
+            - **Description:** A custom or some other type of address entry
+              such as FAX.
+
+        Outlook raises the `E_INVALIDARG` error when you pass any of the
+        following `OlAddressEntryUserType` values as an argument to the
+        create_contact_card method:
+
+        (missing)
+        '''
+        return self._namespace.CreateContactCard(address_entry)
+    
+    def create_recipient(self, recipient_name: str) -> CDispatch:
+        '''
+        Creates a `Recipient` object.
+
+        Parameters
+        ----------
+        recipient_name : str
+            The name of the recipient; it can be a string representing the
+            display name, the alias, or the full SMTP e-mail address of the
+            recipient.
+
+        Returns
+        -------
+        recipient : CDispatch
+            A `Recipient` object that represents the new recipient.
+
+        Remarks
+        -------
+        This method is most commonly used to create a `Recipient` object for
+        use with the `get_shared_default_folder` method, for example, to open a
+        delegator's folder. It can also be used to verify a given name against
+        an address book.
+        '''
+        return self._namespace.CreateRecipient(recipient_name)
+    
+    def create_sharing_item(
+        self,
+        context: str|CDispatch,
+        provider: Optional[CDispatch]=None,
+    ) -> CDispatch:
+        '''
+        Creates a new `SharingItem` object.
+
+        Parameters
+        ----------
+        context : str | CDispatch
+            Either a string value or a `Folder` object representing the sharing
+            context to be used.
+        provider : CDispatch | None, default: None
+            An `OlSharingProvider` value representing the sharing provider to
+            be used.
+
+        Returns
+        -------
+        sharing_item : CDispatch
+            A `SharingItem` object that represents a sharing message for the
+            specified context.
+
+        Remarks
+        -------
+        If a string value is specified in `context`, the method assumes that a
+        URL has been provided as a sharing context. If a `Folder` object is
+        specified in context, the method attempts to discover the sharing
+        context from the folder. If no sharing context exists, or if more than
+        one sharing context exists, an error occurs.
+
+        If `provider` is not specified, the method attempts to use the
+        appropriate sharing provider for the value specified in `context`.
+        '''
+        return self._namespace.CreateSharingItem(context, provider)
+    
+    def dial(self, contact_item: CDispatch) -> None:
+        '''
+        Displays the New Call dialog box that allows users to dial the primary
+        phone number of a specified contact.
+
+        Parameters
+        ----------
+        contact_item : CDispatch
+            The `ContactItem` object of the contact you want to dial.
+
+        Returns
+        -------
+        None
+        '''
+        return self._namespace.Dial(contact_item)
+    
+    def get_address_entry_from_id(self, id_: str) -> CDispatch:
+        '''
+        Returns an `AddressEntry` object that represents the address entry
+        specified by ID.
+
+        Parameters
+        ----------
+        id_ : str
+            A string identifier for an address entry maintained for the
+            session.
+
+        Returns
+        -------
+        address_entry : CDispatch
+            An `AddressEntry` that has the ID property matching the specified
+            ID.
+
+        Remarks
+        -------
+        The ID property for an `AddressEntry` is a permanent, unique string
+        identifier that the transport provider assigns when an `AddressEntry`
+        is created.
+
+        Outlook maintains a hierarchy of address books for a session, and the
+        address entry returned must match the given ID and be in one of the
+        address books.
+
+        `get_address_entry_from_id` returns an error if no item with the given
+        ID can be found.
+
+        `get_address_entry_from_id` also returns an error if no connection is
+        available or the user is set to work offline.
+        '''
+        return self._namespace.GetAddressEntryFromID(id_)
+    
+    def get_default_folder(self, folder_type: int) -> CDispatch:
+        '''
+        Returns a `Folder` object that represents the default folder of the
+        requested type for the current profile; for example, obtains the
+        default `Calendar` folder for the user who is currently logged on.
+
+        Parameters
+        ----------
+        folder_type : int
+            The type of default folder to return.
+
+        Returns
+        -------
+        mapi_folder : CDispatch
+            A `Folder` object that represents the default folder of the
+            requested type for the current profile.
+
+        Remarks
+        -------
+        To return a specific non-default folder, use the `Folders` collection.
+
+        If the default folder of the requested type does not exist, depending
+        on the type, Outlook may create and return the folder, or may raise an
+        error. For example, if `olFolderManagedEmail` is specified as the
+        `folder_type` but the Managed Folders group has not been deployed,
+        Microsoft Outlook raises an error.
+        '''
+        return self._namespace.GetDefaultFolder(folder_type)
+    
+    # def abc(self):
+    #     '''
+    #     description
+
+    #     Parameters
+    #     ----------
+
+    #     Returns
+    #     -------
+
+    #     Remarks
+    #     -------
+        
+    #     '''
+    #     raise NotImplementedError('Not implemented')
+
 
 class Inbox:
     '''
     The Outlook inbox folder.
-
-    Documentation taken from the `Microsoft.Office.Interop.Outlook.Folder`
-    [Documentation](https://learn.microsoft.com/en-us/dotnet/api/microsoft.office.interop.outlook.folder).
 
     Attributes
     ----------
@@ -524,41 +1019,40 @@ class Inbox:
     '''
     
     def __init__(self) -> None:
-        application = Application()
-        outlook = application.get_namespace('MAPI')
-        self._inbox = outlook.GetDefaultFolder(INBOX_FOLDER_NUMBER)
+        self.application = Application()
+        self.namespace = self.application.get_namespace('MAPI')
+        self._inbox = self.namespace._namespace.GetDefaultFolder(INBOX_FOLDER_NUMBER)
 
-        self.address_book_name: str | None = None
-        self.application: CDispatch | None = None
-        self.class_: int | None = None
-        self.current_view: CDispatch | None = None
-        self.custom_views_only: bool | None = None
-        self.default_item_type: int | None = None
-        self.default_message_class: str | None = None
-        self.description: str | None = None
-        self.entry_id: str | None = None
-        self.folder_path: str | None = None
-        self.folders: CDispatch | None = None
-        self.in_app_folder_sync_object: bool | None = None
-        self.is_sharepoint_folder: bool | None = None
-        self.items: CDispatch | None = None
-        self.name: str | None = None
-        self.parent: CDispatch | None = None
-        self.property_accessor: CDispatch | None = None
-        self.session: CDispatch | None = None
-        self.show_as_outlook_ab: bool | None = None
-        self.show_item_count: int | None = None
-        self.store: CDispatch | None = None
-        self.store_id: str | None = None
-        self.unread_item_count: int | None = None
-        self.user_defined_properties: CDispatch | None = None
-        self.views: CDispatch | None = None
-        self.web_view_on: bool | None = None
-        self.web_view_url: str | None = None
+        # Type hints
+        self.address_book_name:          str|None        = None
+        self.class_:                     int|None        = None
+        self.current_view:               CDispatch|None  = None
+        self.custom_views_only:          bool|None       = None
+        self.default_item_type:          int|None        = None
+        self.default_message_class:      str|None        = None
+        self.description:                str|None        = None
+        self.entry_id:                   str|None        = None
+        self.folder_path:                str|None        = None
+        self.folders:                    CDispatch|None  = None
+        self.in_app_folder_sync_object:  bool|None       = None
+        self.is_sharepoint_folder:       bool|None       = None
+        self.items:                      CDispatch|None  = None
+        self.name:                       str|None        = None
+        self.parent:                     CDispatch|None  = None
+        self.property_accessor:          CDispatch|None  = None
+        self.session:                    CDispatch|None  = None
+        self.show_as_outlook_ab:         bool|None       = None
+        self.show_item_count:            int|None        = None
+        self.store:                      CDispatch|None  = None
+        self.store_id:                   str|None        = None
+        self.unread_item_count:          int|None        = None
+        self.user_defined_properties:    CDispatch|None  = None
+        self.views:                      CDispatch|None  = None
+        self.web_view_on:                bool|None       = None
+        self.web_view_url:               str|None        = None
 
         all_attrs = {
             'AddressBookName':         'address_book_name',
-            'Application':             'application',
             'Class':                   'class_',
             'CurrentView':             'current_view',
             'DefaultItemType':         'default_item_type',
