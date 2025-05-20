@@ -1,0 +1,3 @@
+Todo
+
+- [ ] Explore the `Application.advanced_search()` method and its params.
