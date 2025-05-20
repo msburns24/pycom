@@ -1,3 +1,5 @@
+from __future__ import annotations
+from typing import Optional
 from rich import print
 from win32com import client
 from win32com.client import Dispatch, CDispatch
@@ -17,9 +19,6 @@ class Application:
     '''
     Represents the entire Outlook application.
 
-    Documentation taken from the `Microsoft.Office.Interop.Outlook.Application`
-    [Documentation](https://learn.microsoft.com/en-us/dotnet/api/microsoft.office.interop.outlook.application).
-
     Attributes
     ----------
     active_explorer : CDispatch
@@ -29,9 +28,6 @@ class Application:
         the desktop, either an `Explorer` or an `Inspector` object.
     assistance : CDispatch
         Returns an `IAssistance`
-    class_ : int
-        Returns an `OlObjectClass` constant indicating the object's class.
-        Read-only.
     com_add_ins : CDispatch
         Returns a `COMAddIns` collection that represents all the Component
         Object Model (COM) add-ins currently loaded in Microsoft Outlook.
@@ -77,41 +73,25 @@ class Application:
     advanced_search(scope, filter, search_sub_folders, tag) -> CDispatch
         Performs a search based on a specified DAV Searching and Locating
         (DASL) search string.
-    copy_file(file_path: str, dest_folder_path: str) -> CDispatch
+    copy_file(file_path, dest_folder_path) -> CDispatch
         Copies a file from a specified location into a Micro1soft Outlook
         store.
-    create_item(self, item_type: CDispatch) -> CDispatch
+    create_item(item_type) -> CDispatch
         Creates and returns a new Microsoft Outlook item.
-    
-    
-    CreateItemFromTemplate
-    CreateObject
-    GetIDsOfNames
-    GetObjectReference
-    GetTypeInfo
-    GetTypeInfoCount
-    Invoke
-    IsSearchSynchronous
-    QueryInterface
-    Quit
-    RefreshFormRegionDefinition
-    Release
-
-
-    create_item_from_template()
+    create_item_from_template(template_path, in_folder=None) -> CDispatch
         Creates a new Microsoft Outlook item from an Outlook template (`.oft`)
         and returns the new item.
-    create_object()
+    create_object(object_name) -> CDispatch
         Creates an Automation object of the specified class.
-    get_namespace(type_: str='MAPI') -> CDispatch
+    get_namespace(type_='MAPI') -> CDispatch
         Returns a NameSpace object of the specified type.
-    get_object_reference()
+    get_object_reference(item, reference_type) -> CDispatch
         Creates a strong or weak object reference for a specified `Outlook`
         object.
-    is_search_synchronous() -> bool
+    is_search_synchronous(look_in_folders) -> bool
         Returns a boolean indicating if a search will be synchronous or
         asynchronous.
-    refresh_form_region_definition()
+    refresh_form_region_definition(region_name='') -> None
         Refreshes the cache by obtaining the current definition from the
         Windows registry for one or all of the form regions that are defined
         for the local machine and the current user.
@@ -121,7 +101,6 @@ class Application:
         self._application = Dispatch('Outlook.Application')
 
         self.assistance: CDispatch|None = None
-        self.class_: int|None = None
         self.com_add_ins: CDispatch|None = None
         self.data_privacy_options: CDispatch|None = None
         self.default_profile_name: str|None = None
@@ -139,7 +118,6 @@ class Application:
 
         all_attrs = {
             'Assistance':          'assistance',
-            'Class':               'class_',
             'COMAddIns':           'com_add_ins',
             'DataPrivacyOptions':  'data_privacy_options',
             'DefaultProfileName':  'default_profile_name',
@@ -272,18 +250,63 @@ class Application:
         '''
         return self._application.CreateItem(item_type)
 
-    def create_item_from_template(self):
+    def create_item_from_template(
+            self,
+            template_path: str,
+            in_folder: Optional[CDispatch]=None
+    ) -> CDispatch:
         '''
         Creates a new Microsoft Outlook item from an Outlook template (`.oft`)
         and returns the new item.
+
+        Parameters
+        ----------
+        template_path : str
+            The path and file name of the Outlook template for the new item.
+        in_folder : CDispatch
+            The folder in which the item is to be created. If this argument is
+            omitted, the default folder for the item type will be used.
+        
+        Returns
+        -------
+        object_ : CDispatch
+            An Object value that represents the new Microsoft Outlook item.
+        
+        Remarks
+        -------
+        New items will always open in compose mode, as opposed to read mode,
+        regardless of the mode in which the items were saved to disk.
         '''
-        raise NotImplementedError('Not implemented.')
+        return self._application.CreateItemFromTemplate(template_path,
+                                                        in_folder)
     
-    def create_object(self):
+    def create_object(self, object_name: str) -> CDispatch:
         '''
-        Creates an Automation object of the specified class.
+        Creates an `Automation` object of the specified class.
+
+        Parameters
+        ----------
+        object_name : str
+            The class name of the object to create. For information about valid
+            class names, see
+            [OLE Programmatic Identifiers](http://go.microsoft.com/fwlink/?LinkId=87946).
+        
+        Returns
+        -------
+        object_ : CDispatch
+            An Object value that represents the new `Automation` object
+            instance. If the application is already running, `create_object`
+            will create a new instance.
+
+        Remarks
+        -------
+        This method is provided so that other applications can be automated
+        from Microsoft Visual Basic Scripting Edition (VBScript) 1.0, which did
+        not include a `create_object` method. `create_object` has been included
+        in VBScript version 2.0 and later. This method should not be used to
+        automate Microsoft Outlook from VBScript.
         '''
-        raise NotImplementedError('Not implemented.')
+        return self._application.CreateObject(object_name)
     
     def get_namespace(self, type_: str='MAPI') -> CDispatch:
         '''
@@ -307,25 +330,104 @@ class Application:
         '''
         return self._application.GetNamespace(type_)
     
-    def get_object_reference(self):
-        '''Creates a strong or weak object reference for a specified `Outlook`
-        object.'''
-        raise NotImplementedError('Not implemented.')
+    def get_object_reference(
+            self,
+            item: CDispatch,
+            reference_type: CDispatch
+    ) -> CDispatch:
+        '''
+        Creates a strong or weak object reference for a specified `Outlook`
+        object.
+
+        Parameters
+        ----------
+        item : CDispatch
+            The object from which to obtain a strong or weak object reference.
+        reference_type : CDispatch
+            The type of object reference.
+
+        Returns
+        -------
+        object_ : CDispatch
+            An `Object` that represents a strong or weak object reference for
+            the specified object.
+        
+        Remarks
+        -------
+        This method returns a weak or strong object reference for the object
+        specified in `item`.
+
+        **Note:** Outlook can fail to close successfully if an add-in retains
+        strong object references. Always dereference a strong object reference
+        once it is no longer needed by the add-in.
+        '''
+        return self._application.GetObjectReference(item, reference_type)
     
-    def is_search_synchronous(self) -> bool:
+    def is_search_synchronous(self, look_in_folders: str) -> bool:
         '''
         Returns a boolean indicating if a search will be synchronous or
         asynchronous.
+
+        Parameters
+        ----------
+        look_in_folders : str
+            The path name of the folders that the search will search through.
+
+        Returns
+        -------
+        result : bool
+            `True` if the search is synchronous; otherwise, `False`.
+
+        Remarks
+        -------
+        If the search is synchronous, the `advanced_search` method will not
+        return until the search has completed. Conversely, if the search is
+        asynchronous, the `advanced_search` method will immediately return.
+        In order to get meaningful results from an asynchronous search, use the
+        `AdvancedSearchComplete` event to notify you when the search has
+        finished.
         '''
-        raise NotImplementedError('Not implemented.')
+        return self._application.IsSearchSynchronous(look_in_folders)
     
-    def refresh_form_region_definition(self):
+    def refresh_form_region_definition(self, region_name: str='') -> None:
         '''
         Refreshes the cache by obtaining the current definition from the
         Windows registry for one or all of the form regions that are defined
         for the local machine and the current user.
+
+        Parameters
+        ----------
+        region_name : str
+            The internal name of the form region whose definition you want to
+            refresh in the cache. To refresh all form region definitions,
+            specify an empty string.
+        
+        Returns
+        -------
+        None
+
+        Remarks
+        -------
+        When Microsoft Outlook starts, it reads the Windows registry to obtain
+        a list of form regions and their definitions, and then caches the data.
+        The definitions are stored in the registry under the local machine key
+        (as `HKEY_LOCAL_MACHINE\Software\Microsoft\Office\Outlook\FormRegions`)
+        and under the current user key (as
+        `HKEY_CURRENT_USER\Software\Microsoft\Office\Outlook\FormRegions`). The
+        definitions describe the layout, behavior, and other characteristics of
+        each form region. If you register a form region or modify the
+        definition of a form region after Outlook starts, you can use the
+        `refresh_form_region_definition` method to instruct Outlook to obtain
+        the updated information.
+
+        The `region_name` argument should match the `internal_name` property of
+        the form region whose definition you are refreshing. The internal name
+        of a form region supports only ASCII characters. If you specify an
+        empty string, Outlook reads the Windows registry to obtain definitions
+        for all of the form regions that are defined for the local machine and
+        the current user.
         '''
-        raise NotImplementedError('Not implemented.')
+        return self._application.RefreshFormRegionDefinition(region_name)
     
 
 
