@@ -96,6 +96,9 @@ class Application:
         self._application = application
         return
     
+    def __repr__(self) -> str:
+        return f"<Application '{self.name}'>"
+    
     @property
     def assistance(self) -> CDispatch:
         '''Returns an `IAssistance`'''
@@ -350,7 +353,7 @@ class Application:
         '''
         return self._application.CreateObject(object_name)
     
-    def get_namespace(self, type_: str='MAPI') -> NameSpace:
+    def get_namespace(self, namespace_type: str='MAPI') -> NameSpace:
         '''
         Returns a NameSpace object of the specified type.
 
@@ -370,8 +373,8 @@ class Application:
         is functionally equivalent to the Session property, which was
         introduced in Microsoft Outlook 98.
         '''
-        namespace = self._application.GetNamespace(type_)
-        return NameSpace(self, namespace)
+        namespace = self._application.GetNamespace(namespace_type)
+        return NameSpace(self, namespace_type, namespace)
     
     def get_object_reference(
             self,

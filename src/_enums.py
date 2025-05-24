@@ -1,6 +1,45 @@
 from enum import Enum
 
 
+class OlAddressEntryUserType(Enum):
+    '''
+    Represents the type of user for the `AddressEntry` or object derived from
+    `AddressEntry`.
+
+    - `EXCHANGE_USER: 0` - An Exchange user that belongs to the same Exchange
+      forest.
+    - `EXCHANGE_DISTRIBUTION_LIST: 1` - An address entry that is an Exchange
+      distribution list.
+    - `EXCHANGE_PUBLIC_FOLDER: 2` - An address entry that is an Exchange public
+      folder.
+    - `EXCHANGE_AGENT: 3` - An address entry that is an Exchange agent.
+    - `EXCHANGE_ORGANIZATION: 4` - An address entry that is an Exchange
+      organization.
+    - `EXCHANGE_REMOTE_USER: 5` - An Exchange user that belongs to a different
+      Exchange forest.
+    - `OUTLOOK_CONTACT: 10` -  An address entry in an Outlook Contacts folder.
+    - `OUTLOOK_DISTRIBUTION_LIST: 11` -  An address entry that is an Outlook
+      distribution list.
+    - `LDAP: 20` -  An address entry that uses the Lightweight Directory Access
+      Protocol (LDAP).
+    - `SMTP: 30` -  An address entry that uses the Simple Mail Transfer
+      Protocol (SMTP).
+    - `OTHER: 40` -  A custom or some other type of address entry such as FAX.
+    '''
+    EXCHANGE_USER               = 0
+    EXCHANGE_DISTRIBUTION_LIST  = 1
+    EXCHANGE_PUBLIC_FOLDER      = 2
+    EXCHANGE_AGENT              = 3
+    EXCHANGE_ORGANIZATION       = 4
+    EXCHANGE_REMOTE_USER        = 5
+    OUTLOOK_CONTACT             = 10
+    OUTLOOK_DISTRIBUTION_LIST   = 11
+    LDAP                        = 20
+    SMTP                        = 30
+    OTHER                       = 40
+    pass
+
+
 class OlAutoDiscoverConnectionMode(Enum):
     '''
     Specifies the type of connection to the Exchange server for the
@@ -34,6 +73,61 @@ class OlAccountType(Enum):
     HTTP           = 3
     EAS            = 4
     OTHER_ACCOUNT  = 5
+
+
+class OlDefaultFolders(Enum):
+    '''
+    Specifies the folder type for the current Microsoft Outlook profile.
+
+    - `DELETED_ITEMS: 3` - The Deleted Items folder.
+    - `OUTBOX: 4` - The Outbox folder.
+    - `SENT_MAIL: 5` - The Sent Mail folder.
+    - `INBOX: 6` - The Inbox folder.
+    - `CALENDAR: 9` - The Calendar folder.
+    - `CONTACTS: 10` - The Contacts folder.
+    - `JOURNAL: 11` - The Journal folder.
+    - `NOTES: 12` - The Notes folder.
+    - `TASKS: 13` - The Tasks folder.
+    - `DRAFTS: 16` - The Drafts folder.
+    - `ALL_PUBLIC_FOLDERS: 18` - The All Public Folders folder in the Exchange
+       Public Folders store. Only available for an Exchange account.
+    - `CONFLICTS: 19` - The Conflicts folder (subfolder of Sync Issues folder).
+       Only available for an Exchange account.
+    - `SYNC_ISSUES: 20` - The Sync Issues folder. Only available for an
+       Exchange account.
+    - `LOCAL_FAILURES: 21` - The Local Failures folder (subfolder of Sync
+       Issues folder). Only available for an Exchange account.
+    - `SERVER_FAILURES: 22` - The Server Failures folder (subfolder of Sync
+       Issues folder). Only available for an Exchange account.
+    - `JUNK: 23` - The Junk E-Mail folder.
+    - `RSS_FEEDS: 25` - The RSS Feeds folder.
+    - `TO_DO: 28` - The To Do folder.
+    - `MANAGED_EMAIL: 29` - The top-level folder in the Managed Folders group.
+       For more information on Managed Folders, see Help in Outlook. Only
+       available for an Exchange account.
+    - `SUGGESTED_CONTACTS: 30` - The Suggested Contacts folder.
+    '''
+    DELETED_ITEMS       = 3
+    OUTBOX              = 4
+    SENT_MAIL           = 5
+    INBOX               = 6
+    CALENDAR            = 9
+    CONTACTS            = 10
+    JOURNAL             = 11
+    NOTES               = 12
+    TASKS               = 13
+    DRAFTS              = 16
+    ALL_PUBLIC_FOLDERS  = 18
+    CONFLICTS           = 19
+    SYNC_ISSUES         = 20
+    LOCAL_FAILURES      = 21
+    SERVER_FAILURES     = 22
+    JUNK                = 23
+    RSS_FEEDS           = 25
+    TO_DO               = 28
+    MANAGED_EMAIL       = 29
+    SUGGESTED_CONTACTS  = 30
+
 
 
 class OlExchangeConnectionMode(Enum):
@@ -75,4 +169,34 @@ class OlExchangeConnectionMode(Enum):
     CACHED_CONNECTED_DRIZZLE  = 600
     CACHED_CONNECTED_FULL     = 700
     ONLINE                    = 800
+
+
+class OlSharingProvider(Enum):
+    '''
+    Indicates the sharing provider associated with a `SharingItem` object.
+
+    - `UNKNOWN 0` - Represents an unknown sharing provider. This value is used
+      if the sharing provider GUID in the sharing message does not match the
+      GUID of any of the sharing providers represented in this enumeration.
+    - `EXCHANGE 1` - Represents the Exchange sharing provider.
+    - `WEB_CAL 2` - Represents the WebCal sharing provider.
+    - `PUB_CAL 3` - Represents the PubCal sharing provider.
+    - `ICAL 4` - Represents the iCalendar sharing provider.
+    - `SHAREPOINT 5` - Represents the Microsoft SharePoint Foundation sharing
+      provider.
+    - `RSS 6` - Represents the Really Simple Syndication (RSS) sharing
+      provider.
+    - `FEDERATE 7` - Represents a federated sharing provider. A SharingItem
+      object with this type of provider is used for sharing relationships
+      across organizational boundaries (for example, between two organizations
+      using Microsoft Exchange Server 2010).
+    '''
+    UNKNOWN     = 0
+    EXCHANGE    = 1
+    WEB_CAL     = 2
+    PUB_CAL     = 3
+    ICAL        = 4
+    SHAREPOINT  = 5
+    RSS         = 6
+    FEDERATE    = 7
 
