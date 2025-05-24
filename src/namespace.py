@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Optional, TYPE_CHECKING
 from win32com.client import CDispatch
 from . import _enums
+from .account import Account
 
 if TYPE_CHECKING:
     from .application import Application
@@ -140,10 +141,11 @@ class NameSpace:
         return f"<NameSpace '{self._namespace_type}'>"
 
     @property
-    def accounts(self) -> CDispatch:
+    def accounts(self) -> list[Account]:
         '''An `Accounts` collection object that represents all the `Account`
         objects in the current profile. Read-only.'''
-        return self._namespace.Accounts
+        accounts = self._namespace.Accounts
+        return [Account(self, acct) for acct in accounts]
     
     @property
     def address_lists(self) -> CDispatch:

@@ -1,7 +1,12 @@
 from __future__ import annotations
 from typing import Optional, TYPE_CHECKING
 from win32com.client import CDispatch
-import _enums
+from . import _enums
+
+
+if TYPE_CHECKING:
+    from application import Application
+    from namespace import NameSpace
 
 
 class Account:
@@ -13,6 +18,9 @@ class Account:
     account_type : OlAccountType
         Returns a constant in the `OlAccountType` enumeration that indicates
         the type of the Account. Read-only.
+    application : Application
+        Returns an `Application` object that represents the parent Outlook
+        application for the object.
     auto_discover_connection_mode : OlAutoDiscoverConnectionMode
         Specifies the type of connection to the Exchange server for the
         auto-discovery service.
@@ -20,6 +28,13 @@ class Account:
         Returns a string that represents information in XML retrieved from
         the auto-discovery service of the Microsoft Exchange Server that is
         associated with the account. Read-only.
+    current_user : str
+        Returns a string that represents the current user identity for the
+        account. Read-only.
+    delivery_store : str | None
+        Returns a string that represents the default delivery store for the
+        account. Returns `None` if the account does not have a default delivery
+        store.
     display_name : str
         Returns a string representing the display name of the e-mail Account.
         Read-only.
@@ -33,17 +48,45 @@ class Account:
     exchange_mailbox_server_version : str
         Returns a string that represents the full version number of the
         Microsoft Exchange Server that hosts the account mailbox. Read-only.
+    namespace : NameSpace
+        Returns an `NameSpace` object that represents the parent namespace for
+        the account.
     smtp_address : str
         Returns a string representing the Simple Mail Transfer Protocol (SMTP)
         address for the Account. Read-only.
 
     Methods
     -------
+    get_address_entry_from_id(id_)
+        Returns an `AddressEntry` object that represents the address entry
+        specified by the given entry ID.
+    get_recipient_from_id(entry_id)
+        Returns the `Recipient` object that is identified by the given entry
+        ID.
+
+    Remarks
+    -------
+    This is a .NET interface derived from a COM co-class that is required by
+    managed code for interoperability with the corresponding COM object. Use
+    this derived interface to access all method, property, and event members of
+    the COM object. However, if a method or event you want to use shares the
+    same name under the same COM object, cast to the corresponding primary
+    interface to call the method, and cast to the latest events interface to
+    connect to the event. Refer to this topic for information about the COM
+    object.
     '''
     
-    def __init__(self, account: CDispatch) -> None:
+    def __init__(
+            self,
+            namespace: NameSpace,
+            account: CDispatch
+    ) -> None:
+        self.namespace = namespace
         self._account = account
         return
+    
+    def __repr__(self) -> str:
+        return f"<Account '{self.display_name}'>"
     
     @property
     def account_type(self) -> _enums.OlAccountType:
@@ -51,6 +94,12 @@ class Account:
         the type of the Account. Read-only.'''
         acct_type = self._account.AccountType
         return _enums.OlAccountType(acct_type)
+    
+    @property
+    def application(self) -> Application:
+        '''Returns an `Application` object that represents the parent Outlook
+        application for the object. Read-only.'''
+        return self.namespace.application
     
     @property
     def auto_discover_connection_mode(
@@ -83,6 +132,14 @@ class Account:
         Server that is running Microsoft Exchange Server 2007 or later.
         '''
         return self._account.AutoDiscoverXml
+    
+    @property
+    def current_user(self) -> str:
+        '''
+        Returns a string that represents the current user identity for the
+        account. Read-only.
+        '''
+        return self._account.CurrentUser()
     
     @property
     def display_name(self) -> str:
@@ -182,3 +239,73 @@ class Account:
         '''
         return self._account.UserName
     
+    @property
+    def delivery_store(self) -> str | None:
+        '''
+        Returns a string that represents the default delivery store for the
+        account. Returns `None` if the account does not have a default delivery
+        store.
+        '''
+        return self._account.DeliveryStore()
+
+    def get_address_entry_from_id(self, id_: str) -> CDispatch:
+        '''
+        Returns an `AddressEntry` object that represents the address entry
+        specified by the given entry ID.
+
+        Parameters
+        ----------
+        id_ : str
+            Used to identify an address entry that is maintained for the
+            session.
+
+        Returns
+        -------
+        CDispatch
+            An `AddressEntry` that has the ID property that matches the
+            specified ID.
+
+        Remarks
+        -------
+        This method is similar to the `get_address_entry_from_id` method of the
+        `NameSpace` object, but has some additional contextual information
+        about which account to use for the look-up. If there are multiple
+        Microsoft Exchange accounts in the current profile, use the
+        `get_address_entry_from_id` method for the corresponding account.
+
+        The ID property for an `AddressEntry` is a permanent, unique string
+        identifier that the transport provider assigns when an `AddressEntry`
+        is created. Outlook maintains a hierarchy of address books for a
+        session, and the address entry that is returned must match the given
+        ID and be in one of the address books.
+
+        `get_address_entry_from_id` returns an error if no item with the given
+        ID can be found, if no connection is available, or if the user is set
+        to work offline.
+        '''
+        return self._account.GetAddressEntryFromID(id_)
+
+    def get_recipient_from_id(self, entry_id: str) -> CDispatch:
+        '''
+        Returns the `Recipient` object that is identified by the given entry
+        ID.
+
+        Parameters
+        ----------
+        entry_id : str
+            The `entry_id` of the recipient.
+
+        Returns
+        -------
+        CDispatch
+            A `Recipient` object that represents the recipient associated with
+            the specified entry ID.
+
+        Remarks
+        -------
+        This method is similar to the `get_recipient_from_id` method of the
+        `NameSpace` object. If there are multiple Microsoft Exchange accounts
+        in the current profile, use the `get_recipient_from_id` method for the
+        corresponding account.
+        '''
+        return self._account.GetRecipientFromID(entry_id)
