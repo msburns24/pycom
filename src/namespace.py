@@ -85,11 +85,20 @@ class NameSpace:
         Returns a `Folder` object that represents the default folder of the
         requested type for the current profile; for example, obtains the
         default `Calendar` folder for the user who is currently logged on.
-    GetFolderFromID
-    GetGlobalAddressList
-    GetIDsOfNames
-    GetItemFromID
-    GetRecipientFromID
+    get_folder_from_id(entry_id_item, entry_id_store)
+        Returns a Microsoft Outlook item identified by the specified entry ID
+        (if valid).
+    get_global_address_list()
+        Returns an `AddressList` object that represents the Exchange Global
+        Address List.
+    get_ids_of_names
+        Not implemented
+    get_item_from_id(entry_id_item, entry_id_store)
+        Returns a Microsoft Outlook item identified by the specified entry ID
+        (if valid).
+    get_recipient_from_id(entry_id)
+        Returns a `Recipient` object identified by the specified entry ID
+        (if valid).
     GetSelectNamesDialog
     GetSharedDefaultFolder
     GetStoreFromID
@@ -500,7 +509,115 @@ class NameSpace:
         '''
         return self._namespace.GetDefaultFolder(folder_type)
     
-    # def abc(self):
+    def get_folder_from_id(
+            self,
+            entry_id_item: str,
+            entry_id_store: CDispatch
+    ) -> CDispatch:
+        '''
+        Returns a Microsoft Outlook item identified by the specified entry ID
+        (if valid).
+
+        Parameters
+        ----------
+        entry_id_item : str
+            The `entry_id` of the item.
+        entry_id_store : CDispatch
+            The `store_id` for the folder. `entry_id_store` usually must be
+            provided when retrieving an item based on its MAPI IDs.
+
+        Returns
+        -------
+        obj : CDispatch
+            An Object value that represents the specified Outlook item.
+
+        Remarks
+        -------
+        This method is used for ease of transition between MAPI and
+        OLE/Messaging applications and Outlook.
+        '''
+        return self._namespace.GetItemFromID(entry_id_item, entry_id_store)
+
+    def get_global_address_list(self) -> CDispatch:
+        '''
+        Returns an `AddressList` object that represents the Exchange Global
+        Address List.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        address_list : CDispatch
+            An `AddressList` that represents the Global Address List.
+
+        Remarks
+        -------
+        `get_global_address_list` supports only Exchange servers. It returns an
+        error if the Global Address List is not available or cannot be found.
+
+        It also returns an error if no connection is available or the user is
+        set to work offline.
+        '''
+        return self._namespace.GetGlobalAddressList()
+
+    def get_ids_of_names(self) -> CDispatch:
+        # return self._namespace.GetIDsOfNames()
+        raise NotImplementedError('Not implemented')
+
+    def get_item_from_id(
+            self,
+            entry_id_item: str,
+            entry_id_store: CDispatch
+    ) -> CDispatch:
+        '''
+        Returns a Microsoft Outlook item identified by the specified entry ID
+        (if valid).
+
+        Parameters
+        ----------
+        entry_id_item : str
+            The `entry_id` of the item.
+        entry_id_store : CDispatch
+            The `store_id` for the folder. `entry_id_store` usually must be
+            provided when retrieving an item based on its MAPI IDs.
+
+        Returns
+        -------
+        obj : CDispatch
+            An `Object` value that represents the specified Outlook item.
+
+        Remarks
+        -------
+        This method is used for ease of transition between MAPI and
+        OLE/Messaging applications and Outlook.
+        '''
+        return self._namespace.GetItemFromID(entry_id_item, entry_id_store)
+
+    def get_recipient_from_id(self, entry_id: str) -> CDispatch:
+        '''
+        Returns a `Recipient` object identified by the specified entry ID
+        (if valid).
+
+        Parameters
+        ----------
+        entry_id : str
+            The `entry_id` of the recipient.
+
+        Returns
+        -------
+        recipient : CDispatch
+            A `Recipient` object that represents the specified recipient.
+
+        Remarks
+        -------
+        This method is used for ease of transition between MAPI and
+        OLE/Messaging applications and Microsoft Outlook.
+        '''
+        return self._namespace.GetRecipientFromID(entry_id)
+
+    # def abc(self) -> CDispatch:
     #     '''
     #     description
 
@@ -515,3 +632,485 @@ class NameSpace:
         
     #     '''
     #     raise NotImplementedError('Not implemented')
+
+    # def abc(self) -> CDispatch:
+    #     '''
+    #     description
+
+    #     Parameters
+    #     ----------
+
+    #     Returns
+    #     -------
+
+    #     Remarks
+    #     -------
+        
+    #     '''
+    #     raise NotImplementedError('Not implemented')
+
+    # def abc(self) -> CDispatch:
+    #     '''
+    #     description
+
+    #     Parameters
+    #     ----------
+
+    #     Returns
+    #     -------
+
+    #     Remarks
+    #     -------
+        
+    #     '''
+    #     raise NotImplementedError('Not implemented')
+
+    # def abc(self) -> CDispatch:
+    #     '''
+    #     description
+
+    #     Parameters
+    #     ----------
+
+    #     Returns
+    #     -------
+
+    #     Remarks
+    #     -------
+        
+    #     '''
+    #     raise NotImplementedError('Not implemented')
+
+    # def abc(self) -> CDispatch:
+    #     '''
+    #     description
+
+    #     Parameters
+    #     ----------
+
+    #     Returns
+    #     -------
+
+    #     Remarks
+    #     -------
+        
+    #     '''
+    #     raise NotImplementedError('Not implemented')
+
+    # def abc(self) -> CDispatch:
+    #     '''
+    #     description
+
+    #     Parameters
+    #     ----------
+
+    #     Returns
+    #     -------
+
+    #     Remarks
+    #     -------
+        
+    #     '''
+    #     raise NotImplementedError('Not implemented')
+
+    # def abc(self) -> CDispatch:
+    #     '''
+    #     description
+
+    #     Parameters
+    #     ----------
+
+    #     Returns
+    #     -------
+
+    #     Remarks
+    #     -------
+        
+    #     '''
+    #     raise NotImplementedError('Not implemented')
+
+    # def abc(self) -> CDispatch:
+    #     '''
+    #     description
+
+    #     Parameters
+    #     ----------
+
+    #     Returns
+    #     -------
+
+    #     Remarks
+    #     -------
+        
+    #     '''
+    #     raise NotImplementedError('Not implemented')
+
+    # def abc(self) -> CDispatch:
+    #     '''
+    #     description
+
+    #     Parameters
+    #     ----------
+
+    #     Returns
+    #     -------
+
+    #     Remarks
+    #     -------
+        
+    #     '''
+    #     raise NotImplementedError('Not implemented')
+
+    # def abc(self) -> CDispatch:
+    #     '''
+    #     description
+
+    #     Parameters
+    #     ----------
+
+    #     Returns
+    #     -------
+
+    #     Remarks
+    #     -------
+        
+    #     '''
+    #     raise NotImplementedError('Not implemented')
+
+    # def abc(self) -> CDispatch:
+    #     '''
+    #     description
+
+    #     Parameters
+    #     ----------
+
+    #     Returns
+    #     -------
+
+    #     Remarks
+    #     -------
+        
+    #     '''
+    #     raise NotImplementedError('Not implemented')
+
+    # def abc(self) -> CDispatch:
+    #     '''
+    #     description
+
+    #     Parameters
+    #     ----------
+
+    #     Returns
+    #     -------
+
+    #     Remarks
+    #     -------
+        
+    #     '''
+    #     raise NotImplementedError('Not implemented')
+
+    # def abc(self) -> CDispatch:
+    #     '''
+    #     description
+
+    #     Parameters
+    #     ----------
+
+    #     Returns
+    #     -------
+
+    #     Remarks
+    #     -------
+        
+    #     '''
+    #     raise NotImplementedError('Not implemented')
+
+    # def abc(self) -> CDispatch:
+    #     '''
+    #     description
+
+    #     Parameters
+    #     ----------
+
+    #     Returns
+    #     -------
+
+    #     Remarks
+    #     -------
+        
+    #     '''
+    #     raise NotImplementedError('Not implemented')
+
+    # def abc(self) -> CDispatch:
+    #     '''
+    #     description
+
+    #     Parameters
+    #     ----------
+
+    #     Returns
+    #     -------
+
+    #     Remarks
+    #     -------
+        
+    #     '''
+    #     raise NotImplementedError('Not implemented')
+
+    # def abc(self) -> CDispatch:
+    #     '''
+    #     description
+
+    #     Parameters
+    #     ----------
+
+    #     Returns
+    #     -------
+
+    #     Remarks
+    #     -------
+        
+    #     '''
+    #     raise NotImplementedError('Not implemented')
+
+    # def abc(self) -> CDispatch:
+    #     '''
+    #     description
+
+    #     Parameters
+    #     ----------
+
+    #     Returns
+    #     -------
+
+    #     Remarks
+    #     -------
+        
+    #     '''
+    #     raise NotImplementedError('Not implemented')
+
+    # def abc(self) -> CDispatch:
+    #     '''
+    #     description
+
+    #     Parameters
+    #     ----------
+
+    #     Returns
+    #     -------
+
+    #     Remarks
+    #     -------
+        
+    #     '''
+    #     raise NotImplementedError('Not implemented')
+
+    # def abc(self) -> CDispatch:
+    #     '''
+    #     description
+
+    #     Parameters
+    #     ----------
+
+    #     Returns
+    #     -------
+
+    #     Remarks
+    #     -------
+        
+    #     '''
+    #     raise NotImplementedError('Not implemented')
+
+    # def abc(self) -> CDispatch:
+    #     '''
+    #     description
+
+    #     Parameters
+    #     ----------
+
+    #     Returns
+    #     -------
+
+    #     Remarks
+    #     -------
+        
+    #     '''
+    #     raise NotImplementedError('Not implemented')
+
+    # def abc(self) -> CDispatch:
+    #     '''
+    #     description
+
+    #     Parameters
+    #     ----------
+
+    #     Returns
+    #     -------
+
+    #     Remarks
+    #     -------
+        
+    #     '''
+    #     raise NotImplementedError('Not implemented')
+
+    # def abc(self) -> CDispatch:
+    #     '''
+    #     description
+
+    #     Parameters
+    #     ----------
+
+    #     Returns
+    #     -------
+
+    #     Remarks
+    #     -------
+        
+    #     '''
+    #     raise NotImplementedError('Not implemented')
+
+    # def abc(self) -> CDispatch:
+    #     '''
+    #     description
+
+    #     Parameters
+    #     ----------
+
+    #     Returns
+    #     -------
+
+    #     Remarks
+    #     -------
+        
+    #     '''
+    #     raise NotImplementedError('Not implemented')
+
+    # def abc(self) -> CDispatch:
+    #     '''
+    #     description
+
+    #     Parameters
+    #     ----------
+
+    #     Returns
+    #     -------
+
+    #     Remarks
+    #     -------
+        
+    #     '''
+    #     raise NotImplementedError('Not implemented')
+
+    # def abc(self) -> CDispatch:
+    #     '''
+    #     description
+
+    #     Parameters
+    #     ----------
+
+    #     Returns
+    #     -------
+
+    #     Remarks
+    #     -------
+        
+    #     '''
+    #     raise NotImplementedError('Not implemented')
+
+    # def abc(self) -> CDispatch:
+    #     '''
+    #     description
+
+    #     Parameters
+    #     ----------
+
+    #     Returns
+    #     -------
+
+    #     Remarks
+    #     -------
+        
+    #     '''
+    #     raise NotImplementedError('Not implemented')
+
+    # def abc(self) -> CDispatch:
+    #     '''
+    #     description
+
+    #     Parameters
+    #     ----------
+
+    #     Returns
+    #     -------
+
+    #     Remarks
+    #     -------
+        
+    #     '''
+    #     raise NotImplementedError('Not implemented')
+
+    # def abc(self) -> CDispatch:
+    #     '''
+    #     description
+
+    #     Parameters
+    #     ----------
+
+    #     Returns
+    #     -------
+
+    #     Remarks
+    #     -------
+        
+    #     '''
+    #     raise NotImplementedError('Not implemented')
+
+    # def abc(self) -> CDispatch:
+    #     '''
+    #     description
+
+    #     Parameters
+    #     ----------
+
+    #     Returns
+    #     -------
+
+    #     Remarks
+    #     -------
+        
+    #     '''
+    #     raise NotImplementedError('Not implemented')
+
+    # def abc(self) -> CDispatch:
+    #     '''
+    #     description
+
+    #     Parameters
+    #     ----------
+
+    #     Returns
+    #     -------
+
+    #     Remarks
+    #     -------
+        
+    #     '''
+    #     raise NotImplementedError('Not implemented')
+
+    # def abc(self) -> CDispatch:
+    #     '''
+    #     description
+
+    #     Parameters
+    #     ----------
+
+    #     Returns
+    #     -------
+
+    #     Remarks
+    #     -------
+        
+    #     '''
+    #     raise NotImplementedError('Not implemented')
+
+    

@@ -88,7 +88,7 @@ class Application:
     '''
 
     @classmethod
-    def create(cls) -> Application:
+    def new(cls) -> Application:
         application = Dispatch('Outlook.Application')
         return cls(application)
 
