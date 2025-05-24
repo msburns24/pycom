@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Optional, TYPE_CHECKING
-from win32com.client import Dispatch, CDispatch
-from .utils import extract_attributes
+from win32com.client import CDispatch
 
 if TYPE_CHECKING:
     from .application import Application
