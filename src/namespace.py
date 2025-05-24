@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 from win32com.client import CDispatch
 from . import _enums
 from .account import Account
@@ -514,17 +514,17 @@ class NameSpace:
     
     def get_folder_from_id(
             self,
-            entry_id_item: str,
+            entry_id_folder: str,
             entry_id_store: CDispatch
     ) -> CDispatch:
         '''
-        Returns a Microsoft Outlook item identified by the specified entry ID
+        Returns a Folder object identified by the specified entry ID
         (if valid).
 
         Parameters
         ----------
-        entry_id_item : str
-            The `entry_id` of the item.
+        entry_id_folder : str
+            The `entry_id` of the folder.
         entry_id_store : CDispatch
             The `store_id` for the folder. `entry_id_store` usually must be
             provided when retrieving an item based on its MAPI IDs.
@@ -539,7 +539,7 @@ class NameSpace:
         This method is used for ease of transition between MAPI and
         OLE/Messaging applications and Outlook.
         '''
-        return self._namespace.GetItemFromID(entry_id_item, entry_id_store)
+        return self._namespace.GetItemFromID(entry_id_folder, entry_id_store)
 
     def get_global_address_list(self) -> CDispatch:
         '''

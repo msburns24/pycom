@@ -171,6 +171,51 @@ class OlExchangeConnectionMode(Enum):
     ONLINE                    = 800
 
 
+class OlFolderDisplayMode(Enum):
+    '''
+    Specifies the folder display mode.
+
+    - `NORMAL: 0` - Folder is displayed with navigation pane on the left and
+      folder contents on the right.
+    - `FOLDER_ONLY: 1` - Only the contents of the selected folder are
+      displayed.
+    - `NO_NAVIGATION: 2` - Folder contents are displayed but no navigation pane
+      is shown.
+    '''
+    NORMAL         = 0
+    FOLDER_ONLY    = 1
+    NO_NAVIGATION  = 2
+
+
+class OlItemType(Enum):
+    '''
+    Indicates the Outlook Item type.
+
+    - `MAIL_ITEM: 0` - Represents a `MailItem`
+    - `APPOINTMENT_ITEM: 1` - Represents an `AppointmentItem`
+    - `CONTACT_ITEM: 2` - Represents a `ContactItem`
+    - `TASK_ITEM: 3` - Represents a `TaskItem`
+    - `JOURNAL_ITEM: 4` - Represents a `JournalItem`
+    - `NOTE_ITEM: 5` - Represents a `NoteItem`
+    - `POST_ITEM: 6` - Represents a `PostItem`
+    - `DISTRIBUTION_LIST_ITEM: 7` - Represents an `DistListItem`
+    - `MOBILE_ITEM_SMS: 11` - A `MobileItem` object that is a Short Message
+      Service (SMS) message.
+    - `MOBILE_ITEM_MMS: 12` - A `MobileItem` object that is a Multimedia
+      Messaging Service (MMS) message.
+    '''
+    MAIL_ITEM               = 0
+    APPOINTMENT_ITEM        = 1
+    CONTACT_ITEM            = 2
+    TASK_ITEM               = 3
+    JOURNAL_ITEM            = 4
+    NOTE_ITEM               = 5
+    POST_ITEM               = 6
+    DISTRIBUTION_LIST_ITEM  = 7
+    MOBILE_ITEM_SMS         = 11
+    MOBILE_ITEM_MMS         = 12
+
+
 class OlSharingProvider(Enum):
     '''
     Indicates the sharing provider associated with a `SharingItem` object.
@@ -200,3 +245,40 @@ class OlSharingProvider(Enum):
     RSS         = 6
     FEDERATE    = 7
 
+
+class OlShowItemCount(Enum):
+    '''
+    Indicates which type of count for Microsoft Outlook items is displayed for
+    folders in the Outlook Navigation Pane.
+
+    - `NO_ITEM_COUNT: 0` - No item count displayed.
+    - `SHOW_UNREAD_ITEM_COUNT: 1` - Shows count of unread items.
+    - `SHOW_TOTAL_ITEM_COUNT: 2` - Shows count of total number of items.
+    '''
+    NO_ITEM_COUNT           = 0
+    SHOW_UNREAD_ITEM_COUNT  = 1
+    SHOW_TOTAL_ITEM_COUNT   = 2
+
+
+class OlStorageIdentifierType(Enum):
+    '''
+    Specifies the type of identifier for a `StorageItem` object.
+
+    - `SUBJECT: 0` - Identifies a `StorageItem` by `subject`.
+    - `ENTRY_ID: 1` - Identifies a `StorageItem` by `entry_id`.
+    - `MESSAGE_CLASS: 2` - Identifies a `StorageItem` by message class.
+    '''
+    SUBJECT        = 0
+    ENTRY_ID       = 1
+    MESSAGE_CLASS  = 2
+
+
+class OlTableContents(Enum):
+    '''
+    Specifies the type of items in a folder.
+    
+    - `USER_ITEMS: 0` - Only the non-hidden user items in the folder.
+    - `HIDDEN_ITEMS: 1` - Only the hidden items in the folder.
+    '''
+    USER_ITEMS    = 0
+    HIDDEN_ITEMS  = 1

@@ -142,6 +142,15 @@ class Account:
         return self._account.CurrentUser()
     
     @property
+    def delivery_store(self) -> str | None:
+        '''
+        Returns a string that represents the default delivery store for the
+        account. Returns `None` if the account does not have a default delivery
+        store.
+        '''
+        return self._account.DeliveryStore
+    
+    @property
     def display_name(self) -> str:
         '''
         Returns a string representing the display name of the e-mail Account.
@@ -238,15 +247,6 @@ class Account:
         an empty string.
         '''
         return self._account.UserName
-    
-    @property
-    def delivery_store(self) -> str | None:
-        '''
-        Returns a string that represents the default delivery store for the
-        account. Returns `None` if the account does not have a default delivery
-        store.
-        '''
-        return self._account.DeliveryStore()
 
     def get_address_entry_from_id(self, id_: str) -> CDispatch:
         '''
