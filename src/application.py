@@ -87,51 +87,101 @@ class Application:
         for the local machine and the current user.
     '''
 
-    def __init__(self) -> None:
-        self._application = Dispatch('Outlook.Application')
+    @classmethod
+    def create(cls) -> Application:
+        application = Dispatch('Outlook.Application')
+        return cls(application)
 
-        # Type hints
-        self.assistance:            CDispatch|None  = None
-        self.com_add_ins:           CDispatch|None  = None
-        self.data_privacy_options:  CDispatch|None  = None
-        self.default_profile_name:  str|None        = None
-        self.explorers:             CDispatch|None  = None
-        self.inspectors:            CDispatch|None  = None
-        self.is_trusted:            bool|None       = None
-        self.language_settings:     CDispatch|None  = None
-        self.name:                  str|None        = None
-        self.picker_dialog:         CDispatch|None  = None
-        self.product_code:          str|None        = None
-        self.reminders:             CDispatch|None  = None
-        self.session:               CDispatch|None  = None
-        self.time_zones:            CDispatch|None  = None
-        self.version:               str|None        = None
-
-        attrs_map = {
-            'Assistance':          'assistance',
-            'COMAddIns':           'com_add_ins',
-            'DataPrivacyOptions':  'data_privacy_options',
-            'DefaultProfileName':  'default_profile_name',
-            'Explorers':           'explorers',
-            'Inspectors':          'inspectors',
-            'IsTrusted':           'is_trusted',
-            'LanguageSettings':    'language_settings',
-            'Name':                'name',
-            'PickerDialog':        'picker_dialog',
-            'ProductCode':         'product_code',
-            'Reminders':           'reminders',
-            'Session':             'session',
-            'TimeZones':           'time_zones',
-            'Version':             'version',
-        }
-        # for com_name, new_name in attrs_map.items():
-        #     try:
-        #         value = getattr(self._application, com_name)
-        #         setattr(self, new_name, value)
-        #     except:
-        #         pass
-        extract_attributes(self, self._application, attrs_map)
+    def __init__(self, application: CDispatch) -> None:
+        self._application = application
         return
+    
+    @property
+    def assistance(self) -> CDispatch:
+        '''Returns an `IAssistance`'''
+        return self._application.Assistance
+    
+    @property
+    def com_add_ins(self) -> CDispatch:
+        '''Returns a `COMAddIns` collection that represents all the Component
+        Object Model (COM) add-ins currently loaded in Microsoft Outlook.'''
+        return self._application.COMAddIns
+    
+    @property
+    def data_privacy_options(self) -> CDispatch:
+        '''Data privacy options (no documentation available).'''
+        return self._application.DataPrivacyOptions
+    
+    @property
+    def default_profile_name(self) -> str:
+        '''Returns a string representing the name of the default profile name.
+        Read-only.'''
+        return self._application.DefaultProfileName
+    
+    @property
+    def explorers(self) -> CDispatch:
+        ''' Returns an `Explorers` collection object that contains the `Explorer`
+        objects representing all open explorers. Read-only.'''
+        return self._application.Explorers
+    
+    @property
+    def inspectors(self) -> CDispatch:
+        '''Returns an `Inspectors` collection object that contains the
+        `Inspector` objects representing all open inspectors. Read-only.'''
+        return self._application.inspectors
+    
+    @property
+    def is_trusted(self) -> bool:
+        '''Returns a boolean to indicate if an add-in or external caller is
+        considered trusted by Outlook. Read-only.'''
+        return self._application.IsTrusted
+    
+    @property
+    def language_settings(self) -> CDispatch:
+        '''Returns a `LanguageSettings`'''
+        return self._application.LanguageSettings
+    
+    @property
+    def name(self) -> str:
+        '''Returns a string value that represents the display name for the
+        object. Read-only.'''
+        return self._application.Name
+    
+    @property
+    def picker_dialog(self) -> CDispatch:
+        '''Returns a `PickerDialog` object that provides the functionality to
+        select people or data in a dialog box. Read-only.'''
+        return self._application.PickerDialog
+    
+    @property
+    def product_code(self) -> str:
+        '''Returns a string specifying the Microsoft Outlook globally unique
+        identifier (GUID)'''
+        return self._application.ProductCode
+    
+    @property
+    def reminders(self) -> CDispatch:
+        '''Returns a `Reminders` collection that represents all current
+        reminders. Read-only.'''
+        return self._application.Reminders
+    
+    @property
+    def session(self) -> CDispatch:
+        '''Returns the `NameSpace` object for the current session.
+        Read-only.'''
+        return self._application.Session
+    
+    @property
+    def time_zones(self) -> CDispatch:
+        '''Returns a `TimeZones` collection that represents the set of time
+        zones supported by Outlook. Read-only.'''
+        return self._application.TimeZones
+    
+    @property
+    def version(self) -> str:
+        '''Returns or sets a string indicating the number of the version.
+        Read-only.'''
+        return self._application.Version
     
     @property
     def active_explorer(self) -> CDispatch:
@@ -150,7 +200,7 @@ class Application:
             filter,
             search_sub_folders,
             tag,
-    ) -> None:
+    ) -> CDispatch:
         '''
         Performs a search based on a specified DAV Searching and Locating
         (DASL) search string.
