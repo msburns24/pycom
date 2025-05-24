@@ -370,13 +370,8 @@ class Application:
         is functionally equivalent to the Session property, which was
         introduced in Microsoft Outlook 98.
         '''
-        return NameSpace(self, type_)
-    
-    def _get_namespace(self, type_: str='MAPI') -> CDispatch:
-        '''
-        Private method to access `pywin32` method.
-        '''
-        return self._application.GetNamespace(type_)
+        namespace = self._application.GetNamespace(type_)
+        return NameSpace(self, namespace)
     
     def get_object_reference(
             self,

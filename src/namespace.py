@@ -108,49 +108,101 @@ class NameSpace:
     SendAndReceive
     '''
 
-    def __init__(self, application: Application, type_: str='MAPI') -> None:
+    def __init__(self, application: Application, namespace: CDispatch) -> None:
         self.application = application
-        self._namespace = self.application._get_namespace(type_)
-
-        # Type hints
-        self.accounts:                         CDispatch|None  = None
-        self.address_lists:                    CDispatch|None  = None
-        self.auto_discover_connection_mode:    int|None        = None
-        self.auto_discover_xml:                str|None        = None
-        self.categories:                       CDispatch|None  = None
-        self.current_profile_name:             str|None        = None
-        self.current_user:                     CDispatch|None  = None
-        self.default_store:                    CDispatch|None  = None
-        self.exchange_connection_mode:         int|None        = None
-        self.exchange_mailbox_server_name:     str|None        = None
-        self.exchange_mailbox_server_version:  str|None        = None
-        self.folders:                          CDispatch|None  = None
-        self.offline:                          bool|None       = None
-        self.session:                          CDispatch|None  = None
-        self.stores:                           CDispatch|None  = None
-        self.sync_objects:                     CDispatch|None  = None
-
-        # Extract attributes
-        attrs_map = {
-            'Accounts':                      'accounts',
-            'AddressLists':                  'address_lists',
-            'AutoDiscoverConnectionMode':    'auto_discover_connection_mode',
-            'AutoDiscoverXml':               'auto_discover_xml',
-            'Categories':                    'categories',
-            'CurrentProfileName':            'current_profile_name',
-            'CurrentUser':                   'current_user',
-            'DefaultStore':                  'default_store',
-            'ExchangeConnectionMode':        'exchange_connection_mode',
-            'ExchangeMailboxServerName':     'exchange_mailbox_server_name',
-            'ExchangeMailboxServerVersion':  'exchange_mailbox_server_version',
-            'Folders':                       'folders',
-            'Offline':                       'offline',
-            'Session':                       'session',
-            'Stores':                        'stores',
-            'SyncObjects':                   'sync_objects',
-        }
-        extract_attributes(self, self._namespace, attrs_map)
+        self._namespace = namespace
         return
+
+    @property
+    def accounts(self) -> CDispatch:
+        '''An `Accounts` collection object that represents all the `Account`
+        objects in the current profile. Read-only.'''
+        return self._namespace.Accounts
+    
+    @property
+    def address_lists(self) -> CDispatch:
+        '''An `AddressLists` collection representing a collection of the
+        address lists available for this session. Read-only.'''
+        return self._namespace.AddressLists
+    
+    @property
+    def auto_discover_connection_mode(self) -> int:
+        '''A constant that specifies the type of connection to the Exchange
+        server for auto-discovery service. Read-only.'''
+        return self._namespace.AutoDiscoverConnectionMode
+    
+    @property
+    def auto_discover_xml(self) -> str:
+        '''Information in XML retrieved from the auto-discovery service of an
+        Exchange server. Read-only.'''
+        return self._namespace.AutoDiscoverXml
+    
+    @property
+    def categories(self) -> CDispatch:
+        '''The set of `Category` objects available to the namespace.
+        Read/write.'''
+        return self._namespace.Categories
+    
+    @property
+    def current_profile_name(self) -> str:
+        '''The name of the current profile. Read-only.'''
+        return self._namespace.CurrentProfileName
+    
+    @property
+    def current_user(self) -> CDispatch:
+        '''The display name of the currently logged-on user as a `Recipient`
+        object. Read-only.'''
+        return self._namespace.CurrentUser
+    
+    @property
+    def default_store(self) -> CDispatch:
+        '''The default `Store` for the profile. Read-only.'''
+        return self._namespace.DefaultStore
+    
+    @property
+    def exchange_connection_mode(self) -> int:
+        '''A constant that indicates the current connection mode the user is
+        using. Read-only.'''
+        return self._namespace.ExchangeConnectionMode
+    
+    @property
+    def exchange_mailbox_server_name(self) -> str:
+        '''The name of the Exchange server on which the active mailbox is
+        hosted. Read-only.'''
+        return self._namespace.ExchangeMailboxServerName
+    
+    @property
+    def exchange_mailbox_server_version(self) -> str:
+        '''The full version of the Exchange server on which the active mailbox
+        is hosted. Read-only.'''
+        return self._namespace.ExchangeMailboxServerVersion
+    
+    @property
+    def folders(self) -> CDispatch:
+        '''All the folders contained in the specified NameSpace. Read-only.'''
+        return self._namespace.Folders
+    
+    @property
+    def offline(self) -> bool:
+        '''Indicates `True` if Outlook is offline (not connected to an Exchange
+        server), and `False` if online (connected to an Exchange server).
+        Read-only.'''
+        return self._namespace.Offline
+    
+    @property
+    def session(self) -> CDispatch:
+        '''The `NameSpace` object for the current session. Read-only.'''
+        return self._namespace.Session
+    
+    @property
+    def stores(self) -> CDispatch:
+        '''All the `Store` objects in the current profile. Read-only.'''
+        return self._namespace.Stores
+    
+    @property
+    def sync_objects(self) -> CDispatch:
+        '''Contains all Send/Receive groups. Read-only.'''
+        return self._namespace.SyncObjects
 
     def add_store(self, store: CDispatch) -> None:
         '''
