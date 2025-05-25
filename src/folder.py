@@ -13,14 +13,152 @@ if TYPE_CHECKING:
 
 class Folder(UserList[CDispatch]):
     '''
-    description
+    Represents an Outlook folder.
 
     Properties
     ----------
+    address_book_name : str
+        Returns or sets a string that indicates the Address Book name for
+        the Folder object representing a Contacts folder. Read/write.
+    application : Application
+        Returns an Application object that represents the parent Outlook
+        application for the object.
+    current_view : CDispatch
+        Returns a `View` object representing the current view. Read-only.
+    custom_views_only : bool
+        Returns or sets a bool that determines which views are displayed on
+        the `View` menu for a given folder. Read/write.
+    default_item_type : OlItemType
+        Returns a constant from the `OlItemType` enumeration indicating the
+        default Outlook item type contained in the folder. Read-only.
+    default_message_class : str
+        Returns a string representing the default message class for items in
+    description : str
+        Returns or sets a string representing the description of the folder.
+        Read/write.
+    entry_id : str
+        Returns a string representing the unique Entry ID of the object.
+        Read-only.
+    folder_path : str
+        Returns a string that indicates the path of the current folder.
+        Read-only.
+    folders : list[Folder]
+        Returns a list of `Folder` objects that represent all the sub-folders
+        contained in the specified folder. Read-only.
+    in_app_folder_sync_object : bool
+        Returns or sets a Boolean that determines if the specified folder will
+        be synchronized with the e-mail server. Read/write.
+    is_share_point_folder : bool
+        Returns a Boolean that determines if the folder is a Microsoft
+        SharePoint Foundation folder. Read-only.
+    name : str
+        Returns or sets a string value that represents the display name for the
+        object. Read/write.
+    property_accessor : CDispatch
+        Returns a `PropertyAccessor` object that supports creating, getting,
+        setting, and deleting properties of the parent Folder object.
+        Read-only.
+    session : NameSpace
+        Returns the `NameSpace` object for the current session.
+    show_as_outlook_ab : bool
+        Returns or sets a Boolean value that specifies whether the contact
+        items folder will be displayed as an address list in the Outlook
+        Address Book. Read/write.
+    show_item_count : OlShowItemCount
+        Sets or returns a constant in the OlShowItemCount enumeration that
+        indicates whether to display the number of unread messages in the
+        folder or the total number of items in the folder in the Navigation
+        Pane. Read/write.
+    store : Account
+        Returns an `Account` object representing the store that contains the
+        `Folder` object. Read-only.
+    store_id : str
+        Returns a string indicating the store ID for the folder. Read-only.
+    unread_item_count : int
+        Returns an integer value indicating the number of unread items in the
+        folder. Read-only.
+    user_defined_properties : CDispatch
+        Returns a `UserDefinedProperties` object that represents the
+        user-defined custom properties for the `Folder` object. Read-only.
+    views : CDispatch
+        Returns the Views collection of the Folder object. Read-only.
+    web_view_on : bool
+        Returns or sets a bool indicating the Web view state for a folder.
+        Read/write.
+    web_view_url : str
+        Returns or sets a string indicating the URL of the Web page that is
+        assigned to a folder. Read/write. 
 
     Methods
     -------
+    add_to_pffavorites()
+        Adds a Microsoft Exchange public folder to the public folder's
+        Favorites folder.
+    copy_to(destination_folder)
+        Copies the current folder in its entirety to the destination folder.
+    delete()
+        Deletes an object from the collection.
+    display()
+        Displays a new `Explorer` object for the folder.
+    get_calendar_exporter()
+        Creates a `CalendarSharing` object for the specified Folder.
+    get_custom_icon()
+        Returns an `StdPicture` object that represents the custom icon for the
+        folder.
+    get_explorer(display_mode=0)
+        Returns an `Explorer` object that represents a new, inactive `Explorer`
+        object initialized with the specified folder as the current folder.
+    get_storage(storage_identifier, storage_identifier_type)
+        Gets a `StorageItem` object on the parent `Folder` to store data for an
+        Outlook solution.
+    get_table(filter_=None, table_contents=0)
+        Obtains a `Table` object that contains items filtered by `filter_`.
+    items()
+        Returns a list of `Item` objects from the specified folder. Read-only.
+    move_to(destination_folder)
+        Moves a folder to the specified destination folder.
+    set_custom_icon(picture)
+        Sets a custom icon that is specified by `picture` for the folder.
 
+    Remarks
+    -------
+    This is a .NET interface derived from a COM co-class that is required by
+    managed code for interoperability with the corresponding COM object. Use
+    this interface to access all method, property, and event members of the COM
+    object `Folder`. Refer to this topic for information about the COM object.
+
+    A `Folder` object can contain other `Folder` objects, as well as Outlook
+    items. Use the `folders` property of a `NameSpace` object or another
+    `Folder` object to return the set of folders in a `NameSpace` or under a
+    folder. You can navigate nested folders by starting from a top-level
+    folder, say the Inbox, and using a combination of the `folders` property,
+    which returns the set of folders underneath a Folder object in the
+    hierarchy.
+
+    There is a set of folders within an Outlook data store that supports the
+    default functionality of Outlook. Use `get_default_folder`, specifying an
+    index that is one of the constants in the `OlDefaultFolders` enumeration to
+    return one of the default Outlook folders in the Outlook `NameSpace`
+    object.
+
+    While generally it is a good practice to place items that serve the same
+    functionality in the same folder, a folder can contain items of different
+    types. For example, by default, the Calendar folder can contain
+    `AppointmentItem` and `MeetingItem` objects, and the Contacts folder can
+    contain `ContactItem` and `DistListItem` objects. In general, when
+    enumerating items in a folder, do not assume the type of an item in the
+    folder.
+
+    Use the `add` method to add a folder to the `Folders` object. The add
+    method has an optional argument that can be used to specify the type of
+    items that can be stored in that folder. By default, folders created
+    inside another folder inherit the type of the parent folder.
+
+    Note that when items of a specific type are saved, they are saved directly
+    into their corresponding default folder. For example, when the
+    `get_associated_appointment` method is applied to a `MeetingItem` in the
+    Inbox folder, the appointment that is returned will be saved to the default
+    Calendar folder.
     '''
 
     def __init__(self, account: Account, folder: CDispatch) -> None:

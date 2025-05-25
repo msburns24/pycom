@@ -154,7 +154,9 @@ class NameSpace:
         return self._namespace.AddressLists
     
     @property
-    def auto_discover_connection_mode(self) -> int:
+    def auto_discover_connection_mode(
+            self
+    ) -> _enums.OlAutoDiscoverConnectionMode:
         '''A constant that specifies the type of connection to the Exchange
         server for auto-discovery service. Read-only.'''
         auto_disc_conn_mode = self._namespace.AutoDiscoverConnectionMode
@@ -189,7 +191,9 @@ class NameSpace:
         return self._namespace.DefaultStore
     
     @property
-    def exchange_connection_mode(self) -> int:
+    def exchange_connection_mode(
+            self
+    ) -> _enums.OlExchangeConnectionMode:
         '''A constant that indicates the current connection mode the user is
         using. Read-only.'''
         conn_mode = self._namespace.ExchangeConnectionMode
