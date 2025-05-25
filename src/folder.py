@@ -180,10 +180,6 @@ class Folder(UserList[CDispatch]):
     
     @address_book_name.setter
     def address_book_name(self, name: str) -> None:
-        '''
-        Returns or sets a string that indicates the Address Book name for
-        the Folder object representing a Contacts folder. Read/write.
-        '''
         self._folder.AddressBookName = name
         return
 
@@ -212,8 +208,6 @@ class Folder(UserList[CDispatch]):
     
     @custom_views_only.setter
     def custom_views_only(self, value: bool) -> None:
-        '''Returns or sets a bool that determines which views are displayed on
-        the `View` menu for a given folder. Read/write.'''
         self._folder.CustomViewsOnly = value
         return
 
@@ -276,10 +270,6 @@ class Folder(UserList[CDispatch]):
     
     @in_app_folder_sync_object.setter
     def in_app_folder_sync_object(self, value: bool) -> None:
-        '''
-        Returns or sets a Boolean that determines if the specified folder will
-        be synchronized with the e-mail server. Read/write.
-        '''
         self._folder.InAppFolderSyncObject = value
         return
 
@@ -301,10 +291,6 @@ class Folder(UserList[CDispatch]):
     
     @name.setter
     def name(self, value: str) -> None:
-        '''
-        Returns or sets a string value that represents the display name for the
-        object. Read/write.
-        '''
         self._folder.Name = value
         return
 
@@ -335,11 +321,6 @@ class Folder(UserList[CDispatch]):
     
     @show_as_outlook_ab.setter
     def show_as_outlook_ab(self, value: bool) -> None:
-        '''
-        Returns or sets a Boolean value that specifies whether the contact
-        items folder will be displayed as an address list in the Outlook
-        Address Book. Read/write.
-        '''
         self._folder.ShowAsOutlookAB = value
         return
 
@@ -359,12 +340,6 @@ class Folder(UserList[CDispatch]):
             self,
             show_item_count: int | _enums.OlShowItemCount
     ) -> None:
-        '''
-        Sets or returns a constant in the OlShowItemCount enumeration that
-        indicates whether to display the number of unread messages in the
-        folder or the total number of items in the folder in the Navigation
-        Pane. Read/write.
-        '''
         if isinstance(show_item_count, _enums.OlShowItemCount):
             show_item_count = show_item_count.value
         self._folder.ShowItemCount = show_item_count
@@ -418,10 +393,6 @@ class Folder(UserList[CDispatch]):
     
     @web_view_on.setter
     def web_view_on(self, value: bool) -> None:
-        '''
-        Returns or sets a bool indicating the Web view state for a folder.
-        Read/write.
-        '''
         self._folder.WebViewOn = value
         return
 
@@ -435,10 +406,6 @@ class Folder(UserList[CDispatch]):
     
     @web_view_url.setter
     def web_view_url(self, value: str) -> None:
-        '''
-        Returns or sets a string indicating the URL of the Web page that is
-        assigned to a folder. Read/write. 
-        '''
         self._folder.WebViewURL = value
         return
 
