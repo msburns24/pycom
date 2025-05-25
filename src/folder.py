@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import Optional, TYPE_CHECKING
+from typing import Iterator, TYPE_CHECKING
+from collections import UserList
 from win32com.client import CDispatch
 from . import _enums
 
@@ -10,7 +11,7 @@ if TYPE_CHECKING:
 
 
 
-class Folder:
+class Folder(UserList[CDispatch]):
     '''
     description
 
@@ -25,6 +26,7 @@ class Folder:
     def __init__(self, account: Account, folder: CDispatch) -> None:
         self.account = account
         self._folder = folder
+        super().__init__(self._folder.Items)
         return
     
     def __repr__(self) -> str:
@@ -124,7 +126,7 @@ class Folder:
         contained in the specified folder. Read-only.
         '''
         folders = self._folder.Folders
-        return [Folder(f) for f in folders]
+        return [Folder(self.account, f) for f in folders]
 
     @property
     def in_app_folder_sync_object(self) -> bool:
@@ -449,22 +451,6 @@ class Folder:
             display_mode = display_mode.value
         return self._folder.GetExplorer(display_mode)
 
-    # def get_owner(self) -> CDispatch:
-    #     '''
-    #     description
-
-    #     Parameters
-    #     ----------
-
-    #     Returns
-    #     -------
-
-    #     Remarks
-    #     -------
-
-    #     '''
-    #     return self._folder.GetOwner()
-
     def get_storage(
             self,
             storage_identifier: str,
@@ -576,82 +562,79 @@ class Folder:
         '''
         return self._folder.GetTable(filter_, table_contents)
 
-    def get_type_info(self) -> CDispatch:
+    def items(self) -> list[CDispatch]:
         '''
-        description
-
-        Parameters
-        ----------
+        Returns a list of `Item` objects from the specified folder. Read-only.
 
         Returns
         -------
+        list[CDispatch]
 
         Remarks
         -------
-
+        The `items` list is not guaranteed to be in any particular order.
         '''
-        return self._folder.GetTypeInfo()
+        return list(self.data)
 
-    def get_type_info_count(self) -> CDispatch:
+    def move_to(self, destination_folder: Folder) -> None:
         '''
-        description
+        Moves a folder to the specified destination folder.
 
         Parameters
         ----------
-
-        Returns
-        -------
+        destination_folder : Folder
+            The destination `Folder` for the `Folder` that is being moved.
 
         Remarks
         -------
-
+        Setting the `REG_MULTI_SZ` value, `DisableCrossAccountCopy`, in
+        `HKCU\\Software\\Microsoft\\Office\\14.0\\Outlook` in the Windows
+        registry has the side effect of disabling this method.
         '''
-        return self._folder.GetTypeInfoCount()
+        _dest_folder = destination_folder._folder
+        self._folder.MoveTo(_dest_folder)
+        return
 
-    def items(self) -> CDispatch:
+    def set_custom_icon(self, picture: CDispatch) -> None:
         '''
-        description
+        Sets a custom icon that is specified by `picture` for the folder.
 
         Parameters
         ----------
-
-        Returns
-        -------
-
-        Remarks
-        -------
-
-        '''
-        return self._folder.Items()
-
-    def move_to(self) -> CDispatch:
-        '''
-        description
-
-        Parameters
-        ----------
-
-        Returns
-        -------
+        picture : CDispatch
+            Specifies the custom icon for the folder.
 
         Remarks
         -------
+        The `StdPicture` object specified by `picture` must have its `type_`
+        property equal to `PICTYPE_ICON` or `PICTYPE_BITMAP`. The icon or
+        bitmap resource can have a maximum size of 32x32. Icons that are 16x16
+        or 24x24 are also supported, and Microsoft Outlook can scale up a 16x16
+        icon if Outlook is running in high Dots Per Inch (DPI) mode. Icons of
+        other sizes cause `set_custom_icon` to return an error.
 
+        You can set a custom icon for a search folder and for all folders that
+        do not represent a default or a special folder. 
+
+        You can only call `get_custom_icon` from code that runs in-process as
+        Outlook. A `StdPicture` object cannot be marshaled across process
+        boundaries. If you attempt to call `get_custom_icon` from
+        out-of-process code, an exception occurs.
+
+        The custom folder icon that this method provides does not persist
+        beyond the running Outlook session. Add-ins therefore must set the
+        custom folder icon every time that Outlook boots.
+
+        The custom folder icon does not appear in other Exchange clients such
+        as Outlook Web Access, nor does it appear in Outlook running on a
+        Windows Mobile device.
         '''
-        return self._folder.MoveTo()
-
-    def set_custom_icon(self) -> CDispatch:
-        '''
-        description
-
-        Parameters
-        ----------
-
-        Returns
-        -------
-
-        Remarks
-        -------
-
-        '''
-        return self._folder.SetCustomIcon()
+        return self._folder.SetCustomIcon(picture)
+    
+    # Collection Non-Implementation
+    
+    def __setitem__(self, index: int, value: CDispatch) -> None:
+        raise NotImplementedError('Setting/Deleting not implemented.')
+    
+    def __delitem__(self, index: int) -> None:
+        raise NotImplementedError('Setting/Deleting not implemented.')
