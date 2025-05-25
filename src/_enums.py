@@ -75,6 +75,21 @@ class OlAccountType(Enum):
     OTHER_ACCOUNT  = 5
 
 
+class OlBodyFormat(Enum):
+    '''
+    Specifies the format of the body text of an item.
+    
+    - `UNSPECIFIED: 0` - Unspecified format
+    - `PLAIN: 1` - Plain format
+    - `HTML: 2` - HTML format
+    - `RICH_TEXT: 3` - Rich text format
+    '''
+    UNSPECIFIED  = 0
+    PLAIN        = 1
+    HTML         = 2
+    RICH_TEXT    = 3
+
+
 class OlDefaultFolders(Enum):
     '''
     Specifies the folder type for the current Microsoft Outlook profile.
