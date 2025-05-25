@@ -32,9 +32,9 @@ class Account:
         Returns a string that represents the current user identity for the
         account. Read-only.
     delivery_store : str | None
-        Returns a string that represents the default delivery store for the
-        account. Returns `None` if the account does not have a default delivery
-        store.
+        Returns a `Store` object that represents the default delivery store for
+        the account. Returns `None` if the account does not have a default
+        delivery store.
     display_name : str
         Returns a string representing the display name of the e-mail Account.
         Read-only.
@@ -142,11 +142,11 @@ class Account:
         return self._account.CurrentUser()
     
     @property
-    def delivery_store(self) -> str | None:
+    def delivery_store(self) -> CDispatch | None:
         '''
-        Returns a string that represents the default delivery store for the
-        account. Returns `None` if the account does not have a default delivery
-        store.
+        Returns a `Store` object that represents the default delivery store for
+        the account. Returns `None` if the account does not have a default
+        delivery store.
         '''
         return self._account.DeliveryStore
     
